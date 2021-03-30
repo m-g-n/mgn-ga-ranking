@@ -35,6 +35,7 @@ function mgnga_set_ranking() {
 
 	delete_transient( MGNGA_PLUGIN_DOMAIN );
 	set_transient( MGNGA_PLUGIN_DOMAIN, $id_ranking, intval( DAY_IN_SECONDS ) );
+	return $id_ranking;
 }
 
 function mgnga_get_ranking() {
@@ -43,6 +44,10 @@ function mgnga_get_ranking() {
 	if ( $ids !== false ) {
 		return $ids;
 	} else {
-		mgnga_set_ranking();
+		return mgnga_set_ranking();
 	}
+}
+
+function mgnga_ranking_id() {
+	return array_column( mgnga_get_ranking(), 'id' );
 }
