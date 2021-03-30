@@ -32,6 +32,8 @@ class GA_Access_Ranking_Settings {
 		add_settings_field( 'mgnga_service_account_json', __( 'GoogleAPI サービスアカウントJson' ), [ $this, 'service_account' ], $this->option_page, 'mgnga_ranking_setting_section' );
 
 		add_settings_field( 'mgnga_analytics_view_id', __( 'Google Analytics ビューID' ), [ $this, 'view_id' ], $this->option_page, 'mgnga_ranking_setting_section' );
+
+		add_settings_field( 'mgnga_period', __( '計測期間' ), [ $this, 'period' ], $this->option_page, 'mgnga_ranking_setting_section' );
 	}
 
 	public function settings_sanitize( $inputs ) {
@@ -68,6 +70,19 @@ class GA_Access_Ranking_Settings {
 	public function view_id() {
 ?>
 <input type="text" name="mgnga_ranking_settings[view_id]" id="mgnga_view_id" value="<?php echo $this->settings['view_id'] ?? ''; ?>">
+<?php
+	}
+
+	public function period() {
+		$unit = $this->settings['period_unit'] ?? 'day';
+?>
+<input type="text" name="mgnga_ranking_settings[period_num]" value="<?php echo $this->settings['period_num'] ?? ''; ?>">
+<select name="mgnga_ranking_settings[period_unit]">
+	<option value="day"<?php selected( $unit, 'day' ); ?>>日</option>
+	<option value="week"<?php selected( $unit, 'week' ); ?>>週間</option>
+	<option value="month"<?php selected( $unit, 'month' ); ?>>ヶ月</option>
+	<option value="year"<?php selected( $unit, 'year' ); ?>>年</option>
+</select>
 <?php
 	}
 
