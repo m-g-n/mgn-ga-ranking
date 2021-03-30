@@ -36,9 +36,17 @@ class GA_Access_Ranking_Settings {
 		add_settings_field( 'mgnga_period', __( '計測期間' ), [ $this, 'period' ], $this->option_page, 'mgnga_ranking_setting_section' );
 
 		add_settings_field( 'mgnga_expiration', __( '有効期限' ), [ $this, 'expiration' ], $this->option_page, 'mgnga_ranking_setting_section' );
+
+		add_settings_section( 'mgnga_ranking_reget_section', __( '再取得' ), [ $this, 'setting_section_cb' ], 'mgnga_reget' );
 	}
 
 	public function settings_sanitize( $inputs ) {
+		if ( isset( $_POST['reget'] ) ) {
+			mgnga_set_ranking();
+			add_settings_error( 'mgnga_reget_id', 'mgnga_view_reget_info', '情報の再取得を行いました。', 'info' );
+			return $this->settings;
+		}
+
 		if ( isset( $inputs['service_account'] ) ) {
 			$service_account = json_decode( $inputs['service_account'], true );
 			if ( is_null( $service_account ) ) {
@@ -109,6 +117,9 @@ class GA_Access_Ranking_Settings {
 		<?php settings_fields( 'mgnga_ranking_settings_group' ); ?>
 		<?php do_settings_sections( $this->option_page ); ?>
 		<?php submit_button( __( 'Save Settings' ) ); ?>
+
+		<?php do_settings_sections( 'mgnga_reget' ); ?>
+		<?php submit_button( __( '再取得' ), 'primary', 'reget' ); ?>
 	</form>
 </div
 <?php
