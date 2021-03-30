@@ -24,7 +24,7 @@ define( 'MGNGA_PLUGIN_DOMAIN', 'mgnga-ranking' );
 
 require_once MGNGA_PLUGIN_CLASS_DIR . '/class-mgnga-ranking-settings.php';
 require_once MGNGA_PLUGIN_CLASS_DIR . '/class-mgnga-ga-access.php';
-
+require_once MGNGA_PLUGIN_DIR . '/mgnga-functions.php';
 
 if ( is_admin() ) {
 
