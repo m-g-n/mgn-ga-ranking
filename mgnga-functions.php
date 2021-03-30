@@ -10,7 +10,21 @@ use Google_Service_AnalyticsReporting_report as Report;
 use MGNGA\GAAccessRanking\GA_Access;
 
 function mgnga_set_ranking() {
-	$reports = GA_Access::report( '2021-02-01', '2021-02-28' )[0];
+	$settings = get_option( 'mgnga_ranking_settings', true );
+
+	// TODO: 設定がちゃんとされているかの確認
+
+	$units = [
+		'day'   => DAY_IN_SECONDS,
+		'week'  => WEEK_IN_SECONDS,
+		'month' => 30 * DAY_IN_SECONDS,
+		'year'  => YEAR_IN_SECONDS,
+	];
+
+	$end_date = time();
+	$start_date = time() - ( (int)$settings['period_num'] * $units[ $settings['period_unit'] ] );
+
+	$reports = GA_Access::report( date( 'Y-m-d', $start_date ), date( 'Y-m-d', $end_date ) )[0];
 	if ( ! $reports instanceof Report ) {
 		error_log( 'GoogleAnalyticsのレポート取得に失敗しました。' );
 		exit();
@@ -34,7 +48,7 @@ function mgnga_set_ranking() {
 	}
 
 	delete_transient( MGNGA_PLUGIN_DOMAIN );
-	set_transient( MGNGA_PLUGIN_DOMAIN, $id_ranking, intval( DAY_IN_SECONDS ) );
+	set_transient( MGNGA_PLUGIN_DOMAIN, $id_ranking, intval( (int)$settings['expiration_num'] * $units[ $settings['expiration_unit'] ] ) );
 	return $id_ranking;
 }
 

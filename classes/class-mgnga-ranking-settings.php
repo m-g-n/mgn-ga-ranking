@@ -82,7 +82,7 @@ class GA_Access_Ranking_Settings {
 <select name="mgnga_ranking_settings[period_unit]">
 	<option value="day"<?php selected( $unit, 'day' ); ?>>日</option>
 	<option value="week"<?php selected( $unit, 'week' ); ?>>週間</option>
-	<option value="month"<?php selected( $unit, 'month' ); ?>>ヶ月</option>
+	<option value="month"<?php selected( $unit, 'month' ); ?>>ヶ月(30日単位)</option>
 	<option value="year"<?php selected( $unit, 'year' ); ?>>年</option>
 </select>
 <?php
@@ -95,7 +95,7 @@ class GA_Access_Ranking_Settings {
 <select name="mgnga_ranking_settings[expiration_unit]">
 	<option value="day"<?php selected( $unit, 'day' ); ?>>日</option>
 	<option value="week"<?php selected( $unit, 'week' ); ?>>週間</option>
-	<option value="month"<?php selected( $unit, 'month' ); ?>>ヶ月</option>
+	<option value="month"<?php selected( $unit, 'month' ); ?>>ヶ月(30日単位)</option>
 	<option value="year"<?php selected( $unit, 'year' ); ?>>年</option>
 </select>
 <?php
