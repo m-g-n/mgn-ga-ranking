@@ -49,8 +49,14 @@ function mgnga_set_ranking() {
 		];
 	}
 
+	if ( count( $id_ranking ) < 1 ) {
+		return get_transient( MGNGA_PLUGIN_DOMAIN . '_long' );
+	}
+
 	delete_transient( MGNGA_PLUGIN_DOMAIN );
+	delete_transient( MGNGA_PLUGIN_DOMAIN . '_long' );
 	set_transient( MGNGA_PLUGIN_DOMAIN, $id_ranking, intval( (int)$config['expiration_num'] * $units[ $config['expiration_unit'] ] ) );
+	set_transient( MGNGA_PLUGIN_DOMAIN . '_long', $id_ranking, YEAR_IN_SECONDS );
 	return $id_ranking;
 }
 
