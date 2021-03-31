@@ -10,19 +10,17 @@ use Google_Service_AnalyticsReporting_report as Report;
 use MGNGA\GAAccessRanking\GA_Access;
 
 function mgnga_set_ranking() {
-	$settings = get_option( 'mgnga_ranking_settings', true );
+	$config = mgnga_get_config();
 
-	// TODO: 設定がちゃんとされているかの確認
+	if ( $config === false ) {
+		error_log( '正しく設定が登録されていません。' );
+		return false;
+	}
 
-	$units = [
-		'day'   => DAY_IN_SECONDS,
-		'week'  => WEEK_IN_SECONDS,
-		'month' => 30 * DAY_IN_SECONDS,
-		'year'  => YEAR_IN_SECONDS,
-	];
+	$units = mgnga_get_time_unit();
 
 	$end_date = time();
-	$start_date = time() - ( (int)$settings['period_num'] * $units[ $settings['period_unit'] ] );
+	$start_date = time() - ( (int)$config['period_num'] * $units[ $config['period_unit'] ] );
 
 	$reports = GA_Access::report( date( 'Y-m-d', $start_date ), date( 'Y-m-d', $end_date ) )[0];
 	if ( ! $reports instanceof Report ) {
@@ -38,7 +36,7 @@ function mgnga_set_ranking() {
 		$post_id = url_to_postid( $path );
 
 		if ( 0 === $post_id ) {
-			$post_id = sga_url_to_postid( $path );
+			$post_id = mgnga_url_to_postid( $path );
 		}
 
 		if ( 0 === $post_id ) {
@@ -52,7 +50,7 @@ function mgnga_set_ranking() {
 	}
 
 	delete_transient( MGNGA_PLUGIN_DOMAIN );
-	set_transient( MGNGA_PLUGIN_DOMAIN, $id_ranking, intval( (int)$settings['expiration_num'] * $units[ $settings['expiration_unit'] ] ) );
+	set_transient( MGNGA_PLUGIN_DOMAIN, $id_ranking, intval( (int)$config['expiration_num'] * $units[ $config['expiration_unit'] ] ) );
 	return $id_ranking;
 }
 
@@ -199,4 +197,28 @@ function mgnga_url_to_postid($url)
 		}
 	}
 	return 0;
+}
+
+function mgnga_get_time_unit() {
+	return [
+		'day'   => DAY_IN_SECONDS,
+		'week'  => WEEK_IN_SECONDS,
+		'month' => 30 * DAY_IN_SECONDS,
+		'year'  => YEAR_IN_SECONDS,
+	];
+
+}
+
+function mgnga_check_config( $config ) {
+	if ( ! isset( $config['service_account'] ) || ! is_array( $config['service_account'] ) ) { return false; }
+
+	if ( ! isset( $config['view_id'] ) || ! is_numeric( $config['view_id'] ) ) { return false; }
+
+	return true;
+}
+
+function mgnga_get_config() {
+	$config = get_option( 'mgnga_ranking_settings', true );
+
+	return mgnga_check_config( $config ) ? $config : false;
 }
