@@ -20,10 +20,16 @@ class GA_Access_Ranking_Settings {
 		add_action( 'admin_init', [ $this, 'add_setting_init' ] );
 	}
 
+	/**
+	 * 設定ページ登録
+	 */
 	public function add_admin_menu() {
 		add_options_page( 'mgn GA Ranking', 'mgn GA Ranking', 'manage_options', $this->option_page, [ $this, 'options_page_html' ] );
 	}
 
+	/**
+	 * 設定項目登録
+	 */
 	public function add_setting_init() {
 		register_setting( 'mgnga_ranking_settings_group', 'mgnga_ranking_settings', [ 'sanitize_callback' => [ $this, 'settings_sanitize' ] ] );
 
@@ -40,6 +46,13 @@ class GA_Access_Ranking_Settings {
 		add_settings_section( 'mgnga_ranking_reget_section', __( '再取得' ), [ $this, 'setting_section_cb' ], 'mgnga_reget' );
 	}
 
+	/**
+	 * 設定情報サニタイズ処理
+	 *
+	 * @param $inputs 入力された情報
+	 *
+	 * @return false|mixed|void
+	 */
 	public function settings_sanitize( $inputs ) {
 		if ( isset( $_POST['reget'] ) ) {
 			$r = mgnga_set_ranking();
@@ -105,21 +118,35 @@ class GA_Access_Ranking_Settings {
 		return $inputs;
 	}
 
+	/**
+	 * 設定セクションHTML出力
+	 *
+	 * @param $args
+	 */
 	public function setting_section_cb( $args ) {
 	}
 
+	/**
+	 * サービスアカウント設定項目HTML
+	 */
 	public function service_account() {
 ?>
 <textarea type="text" name="mgnga_ranking_settings[service_account]" style="width: 50%; height: 500px;"><?php echo isset( $this->settings['service_account'] ) ? esc_attr( json_encode( $this->settings['service_account'] ), JSON_PRETTY_PRINT ) : ''; ?></textarea>
 <?php
 	}
 
+	/**
+	 * ビューID設定項目HTML
+	 */
 	public function view_id() {
 ?>
 <input type="text" name="mgnga_ranking_settings[view_id]" id="mgnga_view_id" value="<?php echo $this->settings['view_id'] ?? ''; ?>">
 <?php
 	}
 
+	/**
+	 * 計測期間設定項目HTML
+	 */
 	public function period() {
 		$unit = $this->settings['period_unit'] ?? 'week';
 ?>
@@ -133,6 +160,9 @@ class GA_Access_Ranking_Settings {
 <?php
 	}
 
+	/**
+	 * 情報有効期限設定項目HTML
+	 */
 	public function expiration() {
 		$unit = $this->settings['expiration_unit'] ?? 'day';
 ?>
@@ -146,6 +176,9 @@ class GA_Access_Ranking_Settings {
 <?php
 	}
 
+	/**
+	 * オプションページのHTML出力
+	 */
 	public function options_page_html() {
 ?>
 <div class="wrap">

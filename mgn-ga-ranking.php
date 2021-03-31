@@ -27,6 +27,5 @@ require_once MGNGA_PLUGIN_CLASS_DIR . '/class-mgnga-ga-access.php';
 require_once MGNGA_PLUGIN_DIR . '/mgnga-functions.php';
 
 if ( is_admin() ) {
-
 	new GA_Access_Ranking_Settings();
 }

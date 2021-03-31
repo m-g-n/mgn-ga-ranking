@@ -9,6 +9,11 @@
 use Google_Service_AnalyticsReporting_report as Report;
 use MGNGA\GAAccessRanking\GA_Access;
 
+/**
+ * GoogleAnalyticsReportを取得しランキング情報をトランジェント内に保持する
+ *
+ * @return array|false 成功した場合はランキング情報の配列. [ [ 'id' => '投稿ID', 'count' => '表示回数' ], [], [] ..... ] の形式で返される。
+ */
 function mgnga_set_ranking() {
 	$config = mgnga_get_config();
 
@@ -60,6 +65,13 @@ function mgnga_set_ranking() {
 	return $id_ranking;
 }
 
+/**
+ * ランキング情報を取得する
+ *
+ * トランジェントの有効期限内の場合は、トランジェントの情報を使用する
+ *
+ * @return array|false 成功した場合はランキング情報の配列. [ [ 'id' => '投稿ID', 'count' => '表示回数' ], [], [] ..... ] の形式で返される。
+ */
 function mgnga_get_ranking() {
 	$ids = get_transient( MGNGA_PLUGIN_DOMAIN );
 
@@ -70,11 +82,18 @@ function mgnga_get_ranking() {
 	}
 }
 
+/**
+ * ランキングのID配列を取得する
+ *
+ * @return array mgnga_get_ranking()で取得した情報の'id'のみの配列
+ */
 function mgnga_ranking_id() {
 	return array_column( mgnga_get_ranking(), 'id' );
 }
 
 /**
+ * カスタム投稿タイプなど、標準のurl_to_postidでは取得できない投稿IDを取得する
+ *
  * via Simple GA Ranking
  *
  * @link http://simple-ga-ranking.org/ja/
@@ -205,6 +224,11 @@ function mgnga_url_to_postid($url)
 	return 0;
 }
 
+/**
+ * 設定項目の時間単位を実数に変換するための配列を返す
+ *
+ * @return array
+ */
 function mgnga_get_time_unit() {
 	return [
 		'day'   => DAY_IN_SECONDS,
@@ -215,6 +239,13 @@ function mgnga_get_time_unit() {
 
 }
 
+/**
+ * コンフィグが正しく設定されているかのチェック
+ *
+ * @param $config
+ *
+ * @return bool
+ */
 function mgnga_check_config( $config ) {
 	if ( ! isset( $config['service_account'] ) || ! is_array( $config['service_account'] ) ) { return false; }
 
@@ -223,6 +254,11 @@ function mgnga_check_config( $config ) {
 	return true;
 }
 
+/**
+ * コンフィグを取得する
+ *
+ * @return false|mixed|void
+ */
 function mgnga_get_config() {
 	$config = get_option( 'mgnga_ranking_settings', true );
 
