@@ -64,7 +64,7 @@ class GA_Access_Ranking_Settings {
 			return $this->settings;
 		}
 
-		if ( isset( $inputs['service_account'] ) ) {
+		if ( isset( $inputs['service_account'] ) && is_string( $inputs['service_account'] ) ) {
 			$service_account = json_decode( $inputs['service_account'], true );
 			if ( is_null( $service_account ) && strlen( $inputs['service_account'] ) > 0 ) {
 				$inputs['service_account'] = $this->settings['service_account'];
