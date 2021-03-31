@@ -5,7 +5,7 @@
  * Description:       Post viewing ranking making from Google Analytics.
  * Version:           1.0.0
  * Requires at least: 5.0
- * Requires PHP:      7.4
+ * Requires PHP:      7.2
  * Author:            m-g-n
  * Author URI:        https://www.m-g-n.me/
  * License:           GPL v2 or later
