@@ -56,10 +56,10 @@ class GA_Access_Ranking_Settings {
 	public function settings_sanitize( $inputs ) {
 		if ( isset( $_POST['reget'] ) ) {
 			$r = mgnga_set_ranking();
-			if ( $r ) {
+			if ( count( $r ) > 0 ) {
 				add_settings_error( 'mgnga_reget_id', 'mgnga_view_reget_info', '情報の再取得を行いました。', 'info' );
 			} else {
-				add_settings_error( 'mgnga_reget_id', 'mgnga_view_reget_info', '情報の再取得に失敗しました。' );
+				add_settings_error( 'mgnga_reget_id', 'mgnga_view_reget_info', '情報の再取得に失敗しました。GoogleAnalyticsの権限等を確認してください。' );
 			}
 			return $this->settings;
 		}

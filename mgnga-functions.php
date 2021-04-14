@@ -29,8 +29,9 @@ function mgnga_set_ranking() {
 
 	$reports = GA_Access::report( date( 'Y-m-d', $start_date ), date( 'Y-m-d', $end_date ) )[0];
 	if ( ! $reports instanceof Report ) {
+		$r = get_transient( MGNGA_PLUGIN_DOMAIN . '_long' );
 		error_log( 'GoogleAnalyticsのレポート取得に失敗しました。' );
-		exit();
+		return count( $r ) > 0 ? $r : [];
 	}
 
 	$id_ranking = [];
