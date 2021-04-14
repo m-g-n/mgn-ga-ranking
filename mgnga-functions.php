@@ -27,7 +27,8 @@ function mgnga_set_ranking() {
 	$end_date = time();
 	$start_date = time() - ( (int)$config['period_num'] * $units[ $config['period_unit'] ] );
 
-	$reports = GA_Access::report( date( 'Y-m-d', $start_date ), date( 'Y-m-d', $end_date ) )[0];
+	$rs = GA_Access::report( date( 'Y-m-d', $start_date ), date( 'Y-m-d', $end_date ) );
+	$reports = array_shift( $rs );
 	if ( ! $reports instanceof Report ) {
 		$r = get_transient( MGNGA_PLUGIN_DOMAIN . '_long' );
 		error_log( 'GoogleAnalyticsのレポート取得に失敗しました。' );
