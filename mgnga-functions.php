@@ -12,12 +12,14 @@ use MGNGA\GAAccessRanking\GA_Access;
 /**
  * GoogleAnalyticsReportを取得しランキング情報をトランジェント内に保持する
  *
+ * @param string $range 取得するランキングの期間
+ *
  * @return array|false 成功した場合はランキング情報の配列. [ [ 'id' => '投稿ID', 'count' => '表示回数' ], [], [] ..... ] の形式で返される。
  */
-function mgnga_set_ranking() {
+function mgnga_set_ranking( $range = 'custom' ) {
 	$config = mgnga_get_config();
 
-	if ( $config === false ) {
+	if ( false === $config && 'custom' === $range ) {
 		error_log( '正しく設定が登録されていません。' );
 		return false;
 	}
@@ -25,7 +27,18 @@ function mgnga_set_ranking() {
 	$units = mgnga_get_time_unit();
 
 	$end_date = time();
-	$start_date = time() - ( (int)$config['period_num'] * $units[ $config['period_unit'] ] );
+	switch ( $range ) {
+		case 'day' :
+		case 'week' :
+		case 'month' :
+			$start_date = time() - ( 1 * $units[ $range ] );
+			$transient_id = MGNGA_PLUGIN_DOMAIN . '_' . $range;
+			break;
+		default :
+			$start_date = time() - ( (int)$config['period_num'] * $units[ $config['period_unit'] ] );
+			$transient_id = MGNGA_PLUGIN_DOMAIN;
+			break;
+	}
 
 	$rs = GA_Access::report( date( 'Y-m-d', $start_date ), date( 'Y-m-d', $end_date ) );
 	$reports = array_shift( $rs );
@@ -57,13 +70,13 @@ function mgnga_set_ranking() {
 	}
 
 	if ( count( $id_ranking ) < 1 ) {
-		return get_transient( MGNGA_PLUGIN_DOMAIN . '_long' );
+		return get_transient( $transient_id . '_long' );
 	}
 
-	delete_transient( MGNGA_PLUGIN_DOMAIN );
-	delete_transient( MGNGA_PLUGIN_DOMAIN . '_long' );
-	set_transient( MGNGA_PLUGIN_DOMAIN, $id_ranking, intval( (int)$config['expiration_num'] * $units[ $config['expiration_unit'] ] ) );
-	set_transient( MGNGA_PLUGIN_DOMAIN . '_long', $id_ranking, YEAR_IN_SECONDS );
+	delete_transient( $transient_id );
+	delete_transient( $transient_id . '_long' );
+	set_transient( $transient_id, $id_ranking, intval( (int)$config['expiration_num'] * $units[ $config['expiration_unit'] ] ) );
+	set_transient( $transient_id . '_long', $id_ranking, YEAR_IN_SECONDS );
 	return $id_ranking;
 }
 
@@ -72,10 +85,23 @@ function mgnga_set_ranking() {
  *
  * トランジェントの有効期限内の場合は、トランジェントの情報を使用する
  *
+ * @param string $range 取得するランキングの期間
+ *
  * @return array|false 成功した場合はランキング情報の配列. [ [ 'id' => '投稿ID', 'count' => '表示回数' ], [], [] ..... ] の形式で返される。
  */
-function mgnga_get_ranking() {
-	$ids = get_transient( MGNGA_PLUGIN_DOMAIN );
+function mgnga_get_ranking( $range = 'custom' ) {
+	switch ( $range ) {
+		case 'day' :
+		case 'week' :
+		case 'month' :
+			$transient_id = MGNGA_PLUGIN_DOMAIN . '_' . $range;
+			break;
+		default :
+			$transient_id = MGNGA_PLUGIN_DOMAIN;
+			break;
+	}
+
+	$ids = get_transient( $transient_id );
 
 	if ( $ids !== false ) {
 		return $ids;
@@ -89,8 +115,8 @@ function mgnga_get_ranking() {
  *
  * @return array mgnga_get_ranking()で取得した情報の'id'のみの配列
  */
-function mgnga_ranking_id() {
-	return array_column( mgnga_get_ranking(), 'id' );
+function mgnga_ranking_id( $range = 'custom' ) {
+	return array_column( mgnga_get_ranking( $range ), 'id' );
 }
 
 /**
