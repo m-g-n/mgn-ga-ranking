@@ -106,7 +106,7 @@ function mgnga_get_ranking( $range = 'custom' ) {
 	if ( $ids !== false ) {
 		return $ids;
 	} else {
-		return mgnga_set_ranking();
+		return mgnga_set_ranking( $range );
 	}
 }
 
