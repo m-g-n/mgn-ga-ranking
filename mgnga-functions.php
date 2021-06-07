@@ -43,7 +43,7 @@ function mgnga_set_ranking( $range = 'custom' ) {
 	$rs = GA_Access::report( date( 'Y-m-d', $start_date ), date( 'Y-m-d', $end_date ) );
 	$reports = array_shift( $rs );
 	if ( ! $reports instanceof Report ) {
-		$r = get_transient( MGNGA_PLUGIN_DOMAIN . '_long' );
+		$r = get_transient( $transient_id . '_long' );
 		error_log( 'GoogleAnalyticsのレポート取得に失敗しました。' );
 		return count( $r ) > 0 ? $r : [];
 	}
