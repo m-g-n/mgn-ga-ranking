@@ -15,14 +15,14 @@ use MGNGA\GAAccessRanking\GA_Access;
  *
  * @return array $schedules CRON のスケジュールの配列
  */
-function cron_add_halfaday( $schedules ) {
+function mgnga_cron_add_halfaday( $schedules ) {
 	$schedules['halfaday'] = array(
 		'interval' => DAY_IN_SECONDS / 2,
 		'display'  => __( 'Once every half a day' ),
 	);
 	return $schedules;
 }
-add_filter( 'cron_schedules', 'cron_add_halfaday' );
+add_filter( 'cron_schedules', 'mgnga_cron_add_halfaday' );
 
 /**
  * プラグインが有効化されたときに実行される関数を登録
