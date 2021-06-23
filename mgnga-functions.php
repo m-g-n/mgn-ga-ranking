@@ -17,7 +17,7 @@ use MGNGA\GAAccessRanking\GA_Access;
  */
 function cron_add_halfaday( $schedules ) {
 	$schedules['halfaday'] = array(
-		'interval' => 12 * 60 * 60,
+		'interval' => DAY_IN_SECONDS / 2,
 		'display'  => __( 'Once every half a day' ),
 	);
 	return $schedules;
