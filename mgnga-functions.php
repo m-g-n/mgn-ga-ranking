@@ -9,8 +9,49 @@
 use Google_Service_AnalyticsReporting_report as Report;
 use MGNGA\GAAccessRanking\GA_Access;
 
+
 /**
- * GoogleAnalyticsReportを取得しランキング情報をトランジェント内に保持する
+ * CRON のスケジュールに独自のスケジュールを追加
+ *
+ * @return array $schedules CRON のスケジュールの配列
+ */
+function cron_add_halfaday( $schedules ) {
+	$schedules['halfaday'] = array(
+		'interval' => 12 * 60 * 60,
+		'display'  => __( 'Once every half a day' ),
+	);
+	return $schedules;
+}
+add_filter( 'cron_schedules', 'cron_add_halfaday' );
+
+/**
+ * プラグインが有効化されたときに実行される関数を登録
+ *
+ * スケジュールに登録されているアクションの実行時間が取得できなかったら、一定の期間で実行されるアクションを登録
+ */
+register_activation_hook( __FILE__, 'mgnga_activation' );
+function mgnga_activation() {
+	if ( ! wp_next_scheduled( 'mgnga_cron_task_hook' ) ) {
+		wp_schedule_event( time(), 'halfaday', 'mgnga_cron_task_hook' );
+	}
+}
+add_action( 'wp', 'mgnga_activation' );
+
+// 登録された `mgnga_cron_task_hook` で `mgnga_set_ranking` を実行
+add_action( 'mgnga_cron_task_hook', 'mgnga_set_ranking' );
+
+/**
+ * プラグインが停止されたときに実行される関数を登録
+ *
+ * 登録された `mgnga_cron_task_hook` のイベントのスケジュールを削除
+ */
+register_deactivation_hook( __FILE__, 'mgnga_deactivation' );
+function mgnga_deactivation() {
+	wp_clear_scheduled_hook( 'mgnga_cron_task_hook' );
+}
+
+/**
+ * アクションフック `mgnga_cron_task_hook` でGoogleAnalyticsReportを取得し、ランキング情報をトランジェント内に保持する
  *
  * @param string $range 取得するランキングの期間
  *
