@@ -23,5 +23,8 @@ Post viewing ranking making from Google Analytics.
 
 == Changelog ==
 
+= 1.1.0 =
+* Change generating ranking to use wp-cron
+
 = 1.0 =
 * Release

@@ -3,7 +3,7 @@
  * Plugin Name:       m-g-n GA Ranking
  * Plugin URI:        https://github.com/m-g-n/mgn-ga-ranking
  * Description:       Post viewing ranking making from Google Analytics.
- * Version:           1.0.0
+ * Version:           1.1.0
  * Requires at least: 5.0
  * Requires PHP:      7.2
  * Author:            m-g-n
