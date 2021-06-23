@@ -51,7 +51,8 @@ function mgnga_deactivation() {
 }
 
 /**
- * アクションフック `mgnga_cron_task_hook` でGoogleAnalyticsReportを取得し、ランキング情報をトランジェント内に保持する
+ * GoogleAnalyticsReportを取得しランキング情報をトランジェント内に保持する
+ * // アクションフック `mgnga_cron_task_hook` で利用
  *
  * @param string $range 取得するランキングの期間
  *
