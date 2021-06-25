@@ -158,7 +158,9 @@ function mgnga_get_ranking( $range = 'custom' ) {
  * @return array mgnga_get_ranking()で取得した情報の'id'のみの配列
  */
 function mgnga_ranking_id( $range = 'custom' ) {
-	return array_column( mgnga_get_ranking( $range ), 'id' );
+	if ( false !== mgnga_get_ranking( $range ) ) {
+		return array_column( mgnga_get_ranking( $range ), 'id' );
+	}
 }
 
 /**
