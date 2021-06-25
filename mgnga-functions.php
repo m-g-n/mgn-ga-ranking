@@ -160,6 +160,8 @@ function mgnga_get_ranking( $range = 'custom' ) {
 function mgnga_ranking_id( $range = 'custom' ) {
 	if ( false !== mgnga_get_ranking( $range ) ) {
 		return array_column( mgnga_get_ranking( $range ), 'id' );
+	} else {
+		return [];
 	}
 }
 
