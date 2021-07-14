@@ -190,23 +190,22 @@ function mgnga_set_ranking_multisite_data( $range = 'custom' ) {
 		// 記事のパスを取得
 		$path = $report->getDimensions()[0];
 
-		/**
-		 * motor-fan 独自実装
-		 */
-
-		// マルチサイトだったら（モーターファンのサイトだったら）
+		// マルチサイトだったら
 		if ( is_multisite() ) {
-			// モーターファンでランキングに掲載しないデータを除外
+			// マルチサイトでランキングに掲載しないデータを除外
+
+			// note: ここからは表示する記事のパーマリンクに `/article/` が含まれる前提でハードコードされていることに注意
+
 			// path に `/article/` を含まない場合、URL が画像ページだと思われる場合、および2ページ目以降の場合は除外
 			if ( empty( preg_match( '%/article/%', $path ) ) || ! empty( preg_match( '%/article/[^/]+?/[^/]+?%', $path ) ) || ! empty( preg_match( '%\?page\=%', $path ) ) ) {
 				continue;
 			}
 
-			// モーターファンの子サイトの情報の配列を変数に代入
+			// マルチサイトの子サイトの情報の配列を変数に代入
 			$children_sites_data_array = children_sites_data_array();
 
-			// motor-fan の子サイトの投稿記事のパスに一致しなかったら除外
-			// `/article/` の前に文字列があったら（motor-fan の子サイトだったら）
+			// マルチサイトの子サイトの投稿記事のパスに一致しなかったら除外
+			// `/article/` の前に文字列があったら（マルチサイトの子サイトだったら）
 			if ( ! empty( preg_match( '%/(\w+)\/article/%', $path ) ) ) {
 				// その文字列を取得
 				preg_match( '%/(\w+)\/article/%', $path, $prev_match );
