@@ -146,14 +146,14 @@ function mgnga_set_ranking( $range = 'custom' ) {
 }
 
 /**
- * GoogleAnalyticsReportを取得しランキングの記事 URL などをトランジェント内に保持する
+ * GoogleAnalyticsReportを取得しランキングの記事 ID とその記事のブログ ID をトランジェント内に保持する
  * // アクションフック `mgnga_cron_task_hook` で利用
  *
  * @param string $range 取得するランキングの期間
  *
  * @return array|false 成功した場合はランキング情報の配列. [ [ 'post_id' => '投稿ID', 'blog_id' => 'ブログID' ], [], [] ..... ] の形式で返される。
  */
-function mgnga_set_ranking_url( $range = 'custom' ) {
+function mgnga_set_ranking_multisite_data( $range = 'custom' ) {
 	$config = mgnga_get_config();
 	if ( false === $config && 'custom' === $range ) {
 		error_log( '正しく設定が登録されていません。' );
@@ -166,24 +166,24 @@ function mgnga_set_ranking_url( $range = 'custom' ) {
 		case 'week':
 		case 'month':
 			$start_date    = time() - ( 1 * $units[ $range ] );
-			$transient_url = MGNGA_PLUGIN_DOMAIN . '_url_' . $range;
+			$transient_multisite_data = MGNGA_PLUGIN_DOMAIN . '_multisite_data_' . $range;
 			break;
 		default:
 			$start_date    = time() - ( (int) $config['period_num'] * $units[ $config['period_unit'] ] );
-			$transient_url = MGNGA_PLUGIN_DOMAIN . '_url';
+			$transient_multisite_data = MGNGA_PLUGIN_DOMAIN . '_multisite_data';
 			break;
 	}
 
 	$rs      = GA_Access::report( date( 'Y-m-d', $start_date ), date( 'Y-m-d', $end_date ) );
 	$reports = array_shift( $rs );
 	if ( ! $reports instanceof Report ) {
-		$r = get_transient( $transient_url . '_long' );
+		$r = get_transient( $transient_multisite_data . '_long' );
 		error_log( 'GoogleAnalyticsのレポート取得に失敗しました。' );
 		return count( $r ) > 0 ? $r : array();
 	}
 
 	// 配列を宣言
-	$url_ranking = array();
+	$multi_ranking = array();
 
 	// GA からデータを取得
 	foreach ( $reports->getData()->getRows() as $report ) {
@@ -241,26 +241,26 @@ function mgnga_set_ranking_url( $range = 'custom' ) {
 			$blog_id = null;
 		}
 
-		$url_ranking[] = array(
+		$multi_ranking[] = array(
 			'post_id' => $find_id,
 			'blog_id' => $blog_id,
 		);
 	}
 
-	// if ( count( $url_ranking ) < 1 ) {
+	// if ( count( $multi_ranking ) < 1 ) {
 	// return get_transient( $transient_id . '_long' );
 	// }
 
-	// delete_transient( $transient_url );
-	// delete_transient( $transient_url . '_long' );
-	// set_transient( $transient_url, $url_ranking, intval( (int) $config['expiration_num'] * $units[ $config['expiration_unit'] ] ) );
-	// set_transient( $transient_url . '_long', $url_ranking, YEAR_IN_SECONDS );
+	// delete_transient( $transient_multisite_data );
+	// delete_transient( $transient_multisite_data . '_long' );
+	// set_transient( $transient_multisite_data, $multi_ranking, intval( (int) $config['expiration_num'] * $units[ $config['expiration_unit'] ] ) );
+	// set_transient( $transient_multisite_data . '_long', $multi_ranking, YEAR_IN_SECONDS );
 
-	var_dump( $url_ranking );
-	// return $url_ranking;
+	var_dump( $multi_ranking );
+	// return $multi_ranking;
 }
 
-add_shortcode( 'ranking_url', 'mgnga_set_ranking_url' );
+add_shortcode( 'ranking_url', 'mgnga_set_ranking_multisite_data' );
 
 
 
