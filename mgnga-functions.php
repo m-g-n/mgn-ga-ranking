@@ -54,7 +54,7 @@ function mgnga_deactivation() {
  * マルチサイトだったときに、その子サイトのIDとパスを取得
  */
 function children_sites_data_array() {
-	 if ( is_multisite() ) {
+	if ( is_multisite() ) {
 		// マルチサイトの各サイト情報を取得
 		$site_obj = get_sites();
 
@@ -63,11 +63,11 @@ function children_sites_data_array() {
 
 		// 各サイトの情報を個別に取得し、配列に代入
 		foreach ( $site_obj as $site ) {
-			$site_array[$site->blog_id] = $site->path;
+			$site_array[ $site->blog_id ] = $site->path;
 		}
 
 		// 取得した配列の中から親サイトの情報を削除
-		unset($site_array['1']);
+		unset( $site_array['1'] );
 
 		return $site_array;
 	}
@@ -151,7 +151,7 @@ function mgnga_set_ranking( $range = 'custom' ) {
  *
  * @param string $range 取得するランキングの期間
  *
- * @return array|false 成功した場合はランキング情報の配列. [ [ 'post_id' => '投稿ID', 'blog_id' => 'ブログID', 'path' => '記事URL' ], [], [] ..... ] の形式で返される。
+ * @return array|false 成功した場合はランキング情報の配列. [ [ 'post_id' => '投稿ID', 'blog_id' => 'ブログID' ], [], [] ..... ] の形式で返される。
  */
 function mgnga_set_ranking_url( $range = 'custom' ) {
 	$config = mgnga_get_config();
@@ -194,50 +194,47 @@ function mgnga_set_ranking_url( $range = 'custom' ) {
 		 * motor-fan 独自実装
 		 */
 
-		// 旧サイトのデータを除外
-		// URL の最後に '/' がなかったらスキップ
-		if ( '/' !== substr( $path, -1 ) ) {
-			continue;
-		}
-
-		// マルチサイトだったら
+		// マルチサイトだったら（モーターファンのサイトだったら）
 		if ( is_multisite() ) {
-			// 子サイトの情報の配列を変数に代入
-			$children_sites_data_array = children_sites_data_array();
-
-			// motor-fan の子サイトの投稿記事のパスに一致しなかったらスキップ
-			if ( ! preg_match( "/article/", $path ) ) {
+			// モーターファンでランキングに掲載しないデータを除外
+			// path に `/article/` を含まない場合、URL が画像ページだと思われる場合、および2ページ目以降の場合は除外
+			if ( empty( preg_match( '%/article/%', $path ) ) || ! empty( preg_match( '%/article/[^/]+?/[^/]+?%', $path ) ) || ! empty( preg_match( '%\?page\=%', $path ) ) ) {
 				continue;
 			}
 
+			// モーターファンの子サイトの情報の配列を変数に代入
+			$children_sites_data_array = children_sites_data_array();
+
+			// motor-fan の子サイトの投稿記事のパスに一致しなかったら除外
 			// `/article/` の前に文字列があったら（motor-fan の子サイトだったら）
-			if ( ! empty( preg_match( '/(\w+)\/article/', $path ) ) ) {
+			if ( ! empty( preg_match( '%/(\w+)\/article/%', $path ) ) ) {
 				// その文字列を取得
-				preg_match( '/(\w+)\/article/', $path, $prev_match );
+				preg_match( '%/(\w+)\/article/%', $path, $prev_match );
 				// `/article` より前の文字列をパスに変換
 				$url_path = '/' . $prev_match[1] . '/';
 
-				// 子サイトの情報の配列と比較し、ブログ ID を取得
-				$blog_id = array_search( $url_path, $children_sites_data_array);
-			// `/article/` の前に文字列がなかったらスキップ
+				// 子サイトの情報の配列と比較して、その記事のブログ ID を取得
+				$blog_id = array_search( $url_path, $children_sites_data_array );
+			// `/article/` の前に文字列がなかったら（旧サイトのデータか、あるいは親サイトのデータ）除外
 			} else {
 				continue;
 			}
 
-			// `/article/` の後に文字列があったら
-			if ( ! empty( preg_match( '/article\/(\w+)/', $path ) ) ) {
+			// `/article/` の直後に文字列があったら
+			if ( ! empty( preg_match( '%/article\/(\w+)/%', $path ) ) ) {
 				// その文字列を取得
-				preg_match( '/article\/(\w+)/', $path, $next_match );
-				// `article/` 以降の文字列が数値だったら
-				if ( is_int( $next_match[1] ) ) {
+				preg_match( '%/article\/(\w+)/%', $path, $next_match );
+
+				// `article/` 以降の文字列が（文字列(string)型の）数値だったら
+				if ( preg_match( '/^[0-9]+$/', $next_match[1] ) ) {
 					// $find_id に代入
-					$find_id = $next_match[1];
-				// `article/` 以降の文字列が数値ではなかったらスキップ
+					$find_id = (int) $next_match[1];
+				// `article/` 以降の文字列が数値ではなかったら（固定ページ・カテゴリーページなど）除外
 				} else {
 					continue;
 				}
 			}
-			// シングルサイトなら
+		// シングルサイトなら
 		} else {
 			// パスから記事 ID を取得
 			$find_id = url_to_postid( $path );
@@ -247,7 +244,6 @@ function mgnga_set_ranking_url( $range = 'custom' ) {
 		$url_ranking[] = array(
 			'post_id' => $find_id,
 			'blog_id' => $blog_id,
-			'path'    => $path,
 		);
 	}
 
@@ -261,7 +257,7 @@ function mgnga_set_ranking_url( $range = 'custom' ) {
 	// set_transient( $transient_url . '_long', $url_ranking, YEAR_IN_SECONDS );
 
 	var_dump( $url_ranking );
-	return $url_ranking;
+	// return $url_ranking;
 }
 
 add_shortcode( 'ranking_url', 'mgnga_set_ranking_url' );
