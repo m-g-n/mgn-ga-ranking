@@ -246,25 +246,17 @@ function mgnga_set_ranking_multisite_data( $range = 'custom' ) {
 		);
 	}
 
-	// if ( count( $multi_ranking ) < 1 ) {
-	// return get_transient( $transient_id . '_long' );
-	// }
+	if ( count( $multi_ranking ) < 1 ) {
+		return get_transient( $transient_id . '_long' );
+	}
 
-	// delete_transient( $transient_multisite_data );
-	// delete_transient( $transient_multisite_data . '_long' );
-	// set_transient( $transient_multisite_data, $multi_ranking, intval( (int) $config['expiration_num'] * $units[ $config['expiration_unit'] ] ) );
-	// set_transient( $transient_multisite_data . '_long', $multi_ranking, YEAR_IN_SECONDS );
+	delete_transient( $transient_multisite_data );
+	delete_transient( $transient_multisite_data . '_long' );
+	set_transient( $transient_multisite_data, $multi_ranking, intval( (int) $config['expiration_num'] * $units[ $config['expiration_unit'] ] ) );
+	set_transient( $transient_multisite_data . '_long', $multi_ranking, YEAR_IN_SECONDS );
 
-	var_dump( $multi_ranking );
-	// return $multi_ranking;
+	return $multi_ranking;
 }
-
-add_shortcode( 'ranking_url', 'mgnga_set_ranking_multisite_data' );
-
-
-
-
-
 
 /**
  * ランキング情報を取得する
@@ -297,32 +289,32 @@ function mgnga_get_ranking( $range = 'custom' ) {
 }
 
 /**
- * ランキング記事のURLを取得する
+ * ランキングの記事 ID とその記事のブログ ID を取得する
  *
  * トランジェントの有効期限内の場合は、トランジェントの情報を使用する
  *
  * @param string $range 取得するランキングの期間
  *
- * @return array|false 成功した場合はランキング情報の配列. [ [ 'id' => '投稿ID', 'path' => '記事URL' ], [], [] ..... ] の形式で返される。
- *//*
-function mgnga_get_ranking_url( $range = 'custom' ) {
+ * @return array|false 成功した場合はランキング情報の配列. [ [ 'post_id' => '投稿ID', 'blog_id' => 'ブログID' ], [], [] ..... ] の形式で返される。
+ */
+function mgnga_get_ranking_multisite_data( $range = 'custom' ) {
 	switch ( $range ) {
 		case 'day':
 		case 'week':
 		case 'month':
-			$transient_url = MGNGA_PLUGIN_DOMAIN . '_url_' . $range;
+			$transient_multisite_data = MGNGA_PLUGIN_DOMAIN . '_multisite_data_' . $range;
 			break;
 		default:
-			$transient_url = MGNGA_PLUGIN_DOMAIN . '_url';
+			$transient_multisite_data = MGNGA_PLUGIN_DOMAIN . '_multisite_data';
 			break;
 	}
 
-	$urls = get_transient( $transient_url );
+	$multisite_data = get_transient( $transient_multisite_data );
 
-	if ( $urls !== false ) {
-		return $urls;
+	if ( $multisite_data !== false ) {
+		return $multisite_data;
 	} else {
-		return mgnga_set_ranking_url( $range );
+		return mgnga_set_ranking_multisite_data( $range );
 	}
 }
 
