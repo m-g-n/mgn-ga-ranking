@@ -23,6 +23,10 @@ Post viewing ranking making from Google Analytics.
 
 == Changelog ==
 
+= 1.2.0 =
+* Change to be able to get the ranking of all multi-site articles
+* Caution : Hardcoded permalinks for multi-site
+
 = 1.1.0 =
 * Change generating ranking to use wp-cron
 
